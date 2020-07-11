@@ -1,0 +1,10 @@
+workflows:
+    ios-app:
+        name: iOS App
+        environment:
+            xcode: latest
+            cocoapods: default
+        scripts:
+            - xcodebuild build -workspace "<your_xcode_workspace>.xcworkspace" -scheme "<your_scheme>" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+        artifacts:
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
