@@ -13,11 +13,11 @@ class _OtherState extends State<Other> {
   TextEditingController controller_name = TextEditingController();
   TextEditingController controller_salary = TextEditingController();
   TextEditingController controller2 = TextEditingController();
-  bool up ;
   int salary;
   String date;
   String currentdate;
   int curUserId;
+  String TakeOrPut;
 
   final formKey = new GlobalKey<FormState>();
   DBHelper dbHelper;
@@ -31,16 +31,16 @@ class _OtherState extends State<Other> {
     var formattedDate = "${dateParse.day}-${dateParse.month}-${dateParse.year}";
 
     setState(() {
-       currentdate = formattedDate.toString();
+      currentdate = formattedDate.toString();
     });
   }
 
   @override
   void initState() {
+    TakeOrPut="take";
     super.initState();
     dbHelper = DBHelper();
     isUpdat = false;
-     up = true;
     refreshList();
     getCurrentDate();
   }
@@ -63,19 +63,18 @@ class _OtherState extends State<Other> {
         OtherModel e = OtherModel(
           curUserId,
           salary,
-//          up,
+          TakeOrPut,
           date,
         );
         dbHelper.update(e);
         setState(() {
           isUpdat = false;
-          up=true;
         });
       } else {
         OtherModel e = OtherModel(
           null,
           salary,
-//          up,
+          TakeOrPut,
           date,
         );
         dbHelper.save(e);
@@ -86,10 +85,6 @@ class _OtherState extends State<Other> {
       Navigator.of(context).pop();
     }
   }
-
-  var value;
-  var _character;
-  var value2;
 
   void form() {
     AlertDialog alertDialog = AlertDialog(
@@ -111,46 +106,41 @@ class _OtherState extends State<Other> {
               verticalDirection: VerticalDirection.down,
               children: <Widget>[
                 TextFormField(
-                    textDirection: TextDirection.rtl,
-                    controller: controller_salary,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(
-                              color: Color(0xFF0A3154),
-                              width: 2,
-                            )),
-                        labelText: 'ادخل المبلغ'),
-                    validator: (val) => val.length == 0 ? 'ادخل المبلغ' : null,
-                    onSaved: (val) {
-                      salary = int.parse(val);
-                      date = currentdate;
-                    }),
+                  textDirection: TextDirection.rtl,
+                  controller: controller_salary,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: Color(0xFF0A3154),
+                          width: 2,
+                        ),
+                      ),
+                      labelText: 'ادخل المبلغ'),
+                  validator: (val) => val.length == 0 ? 'ادخل المبلغ' : null,
+                  onSaved: (val) {
+                    salary = int.parse(val);
+                    date = currentdate;
+
+                  },
+                ),
                 SizedBox(
                   height: 8,
                 ),
-                RadioListTile<String>(
-                  title: const Text('سحب'),
-                  value: value,
-                  groupValue: _character,
-                  onChanged: (value) {
-                    setState(() {
-                      _character = value;
-                      up=true;
-                    });
-                  },
+                ListTile(
+                  title: Text("سحب"),
+                  leading: Radio(
+                      value: "take",
+                      groupValue: TakeOrPut,
+                      onChanged: Changeing),
                 ),
-                RadioListTile<String>(
-                  title: const Text('ايداع'),
-                  value: value2,
-                  groupValue: _character,
-                  onChanged: (value) {
-                    setState(() {
-                      _character = value;
-                      up=false;
-                    });
-                  },
+                ListTile(
+                  title: Text("إيداع"),
+                  leading: Radio(
+                      value: "put",
+                      groupValue: TakeOrPut,
+                      onChanged: Changeing),
                 ),
                 SizedBox(
                   height: 8,
@@ -250,7 +240,7 @@ class _OtherState extends State<Other> {
                         OtherModel otherModel = OtherModel(
                           curUserId,
                           salary,
-//                          up,
+                          TakeOrPut,
                           date,
                         );
                         dbHelper.delete(otherModel.id);
@@ -319,7 +309,8 @@ class _OtherState extends State<Other> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   IconButton(
@@ -328,39 +319,38 @@ class _OtherState extends State<Other> {
                                       onPressed: () {
                                         setState(() {
                                           isUpdat = true;
-                                          up=false;
                                           curUserId = otherModel.id;
-                                          date=otherModel.date;
+                                          date = otherModel.date;
                                         });
                                         controller_salary.text =
                                             otherModel.salary.toString();
                                         form();
                                       }),
-                                otherModel.salary<5000?  IconButton(
-                                      icon: Icon(Icons.arrow_upward),
-                                      color: Colors.green,
-                                      onPressed: () {
-                                        setState(() {
-                                          isUpdat = true;
-                                          up=false;
-                                          curUserId = otherModel.id;
-                                        });
-                                        controller_salary.text =
-                                            otherModel.salary.toString();
-                                        form();
-                                      }): IconButton(
-                                    icon: Icon(Icons.arrow_downward),
-                                    color: Colors.redAccent,
-                                    onPressed: () {
-                                      setState(() {
-                                        isUpdat = true;
-                                        up=false;
-                                        curUserId = otherModel.id;
-                                      });
-                                      controller_salary.text =
-                                          otherModel.salary.toString();
-                                      form();
-                                    }),
+                                  otherModel.TakeOrPut == "put"
+                                      ? IconButton(
+                                          icon: Icon(Icons.arrow_upward),
+                                          color: Colors.green,
+                                          onPressed: () {
+                                            setState(() {
+                                              isUpdat = true;
+                                              curUserId = otherModel.id;
+                                            });
+                                            controller_salary.text =
+                                                otherModel.salary.toString();
+                                            form();
+                                          })
+                                      : IconButton(
+                                          icon: Icon(Icons.arrow_downward),
+                                          color: Colors.redAccent,
+                                          onPressed: () {
+                                            setState(() {
+                                              isUpdat = true;
+                                              curUserId = otherModel.id;
+                                            });
+                                            controller_salary.text =
+                                                otherModel.salary.toString();
+                                            form();
+                                          }),
                                 ],
                               ),
                               Expanded(
@@ -400,7 +390,9 @@ class _OtherState extends State<Other> {
                     ),
                   );
                 });
-          } else if (null == snapshot.data || snapshot.data.length == 0||salary==null) {
+          } else if (null == snapshot.data ||
+              snapshot.data.length == 0 ||
+              salary == null) {
             return Center(child: Text("لا توجد بيانات"));
           }
 
@@ -439,5 +431,11 @@ class _OtherState extends State<Other> {
         ),
       ),
     );
+  }
+
+  void Changeing(String value) {
+    setState(() {
+      TakeOrPut = value;
+    });
   }
 }

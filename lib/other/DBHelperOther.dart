@@ -10,7 +10,7 @@ class DBHelper {
   static const String ID = 'id';
   static const String DATE = 'date';
   static const String SALARY = 'salary';
-  static const String UP = 'up';
+  static const String TakeOrPut = 'TakeOrPut';
   static const String TABLE = 'OtherModel';
   static const String DB_NAME = 'otherModel1.db';
 
@@ -31,7 +31,7 @@ class DBHelper {
 
   _onCreate(Database db, int version) async {
     await db.execute(
-        "CREATE TABLE $TABLE ($ID INTEGER PRIMARY KEY, $DATE varchar(50),$UP integer, $SALARY integer)");
+        "CREATE TABLE $TABLE ($ID INTEGER PRIMARY KEY, $SALARY integer,$TakeOrPut varchar(50), $DATE varchar(50))");
   }
 
   Future<OtherModel> save(OtherModel otherModel) async {
@@ -43,7 +43,7 @@ class DBHelper {
   Future<List<OtherModel>> getOtherModels() async {
     var dbClient = await db;
     List<Map> maps =
-        await dbClient.query(TABLE, columns: [ID, DATE, UP, SALARY]);
+        await dbClient.query(TABLE, columns: [ID, SALARY, TakeOrPut, DATE]);
     List<OtherModel> workersDoptModels = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {

@@ -2,17 +2,17 @@ class OtherModel {
   //attributes = fields in table
   int id;
   int salary;
-//  bool up;
+  String TakeOrPut;
   String date;
 
   OtherModel(this.id, this.salary,
-//      this.up,
+      this.TakeOrPut,
       this.date);
 
   OtherModel.fromMap(Map<String, dynamic> map) {
     id = map['id'];
     salary = map['salary'];
-//    up = map['up'];
+    TakeOrPut = map['TakeOrPut'];
     date = map['date'];
   }
 

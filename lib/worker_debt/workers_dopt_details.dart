@@ -67,7 +67,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
   sum() {
     dbHelper.sumTake().then((value) {
       setState(() {
-        sumTake = null ? sumTake = 0 : sumTake = value;
+       sumTake = value;
       });
     });
   }
@@ -92,7 +92,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
             TakeModel(null, quantity, date, foreignkey);
         dbHelper.saveDetails(takeModel);
       }
-
+      sum();
       clearName();
       refreshList();
       Navigator.of(context).pop();
@@ -135,11 +135,12 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                   onSaved: (val) {
                     quantity = int.parse(val);
                     date=currentdate;
-                    foreignkey = widget.workersDoptModel.id;
-                    remain = widget.workersDoptModel.salary;
+//                    foreignkey = widget.workersDoptModel.id;
+//                    remain = widget.workersDoptModel.salary;
+                   widget.workersDoptModel.remain=widget.workersDoptModel.salary-sumTake;
+//                    widget.workersDoptModel.takefrom=sumTake;
                   },
                 ),
-//                - sumTake
                 SizedBox(
                   height: 8,
                 ),
@@ -243,6 +244,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                         dbHelper.deleteDetail(takeModel.idtake);
                         Navigator.of(context).pop();
                         clearName();
+                        sum();
                         refreshList();
                       },
                       child: Text(
@@ -313,7 +315,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                       height: 10,
                     ),
                     Text("المتبقي :"+
-                        widget.workersDoptModel.remain.toString(),
+                        (widget.workersDoptModel.salary-(sumTake!=null?sumTake:sumTake=0)).toString(),
                       style: TextStyle(
                         fontSize: 25,
                         color: Colors.black87,
@@ -323,7 +325,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                     SizedBox(
                       height: 10,
                     ),  Text("المسحوب :"+
-                        widget.workersDoptModel.takefrom.toString(),
+                        sumTake.toString(),
                       style: TextStyle(
                         fontSize: 25,
                         color: Colors.black87,
@@ -347,7 +349,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
               height: 20,
             ),
             Expanded(
-              child: FutureBuilder(
+              child: sumTake!=null?FutureBuilder(
                 future: dbHelper.allDetails(),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
@@ -381,6 +383,10 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                                           quantity = takeModel.quantity;
                                           idtake=takeModel.idtake;
                                           date=takeModel.date;
+                                          print(foreignkey.toString());
+                                          print(quantity.toString());
+                                          print(idtake.toString());
+                                          print(date.toString());
                                         });
                                         controller_mony_takeen.text =
                                             takeModel.quantity.toString();
@@ -423,8 +429,14 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                           );
                         });
                   } else if (null == snapshot.data || snapshot.data.length == 0) {
-                    return Center(
-                        child: Text(
+                    return CircularProgressIndicator();
+                  }
+
+                  return CircularProgressIndicator();
+                },
+              ):Expanded(
+                child: Center(
+                    child: Text(
                       "اضغط على زر الاضافة لاضافة عمال جدد",
                       style: TextStyle(
                         color: Colors.purple.shade900,
@@ -432,11 +444,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                       ),
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
-                    ));
-                  }
-
-                  return CircularProgressIndicator();
-                },
+                    )),
               ),
             ),
           ],

@@ -3,9 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'purchasing_model.dart';
 import 'dart:async';
+
 class Purchasing extends StatefulWidget {
   @override
-  _PurchasingState  createState() => _PurchasingState();
+  _PurchasingState createState() => _PurchasingState();
 }
 
 class _PurchasingState extends State<Purchasing> {
@@ -87,23 +88,24 @@ class _PurchasingState extends State<Purchasing> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               verticalDirection: VerticalDirection.down,
-              children: <Widget>[ TextFormField(
-                  textDirection: TextDirection.rtl,
-                  controller: controller_price,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(
-                            color: Color(0xFF0A3154),
-                            width: 2,
-                          )),
-                      labelText: 'ادخل سعر الشراء'),
-                  validator: (val) =>
-                  val.length == 0 ? 'ادخل سعر الشراء' : null,
-                  onSaved: (val) {
-                    price = int.parse(val);
-                  }),
+              children: <Widget>[
+                TextFormField(
+                    textDirection: TextDirection.rtl,
+                    controller: controller_price,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            borderSide: BorderSide(
+                              color: Color(0xFF0A3154),
+                              width: 2,
+                            )),
+                        labelText: 'ادخل سعر الشراء'),
+                    validator: (val) =>
+                        val.length == 0 ? 'ادخل سعر الشراء' : null,
+                    onSaved: (val) {
+                      price = int.parse(val);
+                    }),
                 SizedBox(
                   height: 8,
                 ),
@@ -120,13 +122,13 @@ class _PurchasingState extends State<Purchasing> {
                             width: 2,
                           )),
                       labelText: 'تفاصيل المشترى'),
-                  validator: (val) => val.length == 0 ? 'اذخل تفاصيل المشترى' : null,
+                  validator: (val) =>
+                      val.length == 0 ? 'اذخل تفاصيل المشترى' : null,
                   onSaved: (val) => details = val,
                 ),
                 SizedBox(
                   height: 8,
                 ),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -192,19 +194,20 @@ class _PurchasingState extends State<Purchasing> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               verticalDirection: VerticalDirection.down,
-              children: <Widget>[            TextFormField(
-                textDirection: TextDirection.rtl,
-                controller: controller_price,
-                readOnly: true,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: Colors.red,
-                          width: 2,
-                        )),
-                    labelText: 'السعر'),
-              ),
+              children: <Widget>[
+                TextFormField(
+                  textDirection: TextDirection.rtl,
+                  controller: controller_price,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                            width: 2,
+                          )),
+                      labelText: 'السعر'),
+                ),
                 SizedBox(
                   height: 8,
                 ),
@@ -225,7 +228,6 @@ class _PurchasingState extends State<Purchasing> {
                 SizedBox(
                   height: 8,
                 ),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -287,12 +289,13 @@ class _PurchasingState extends State<Purchasing> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   PurchasingModel purchasingModel =
-                  PurchasingModel.fromMap(snapshot.data[index]);
+                      PurchasingModel.fromMap(snapshot.data[index]);
                   return ListTile(
                     title: Container(
                       width: MediaQuery.of(context).size.width,
                       margin: EdgeInsets.only(top: 20),
-                      padding: EdgeInsets.only(top: 15, left: 8, right: 8,bottom: 15),
+                      padding: EdgeInsets.only(
+                          top: 15, left: 8, right: 8, bottom: 15),
                       decoration: BoxDecoration(
                         color: Colors.black87,
                         borderRadius: BorderRadius.circular(25),
@@ -308,17 +311,23 @@ class _PurchasingState extends State<Purchasing> {
                               IconButton(
                                   icon: Icon(Icons.edit),
                                   color: Colors.green,
-                                  onPressed: () {setState(() {
-                                    isUpdating = true;
-                                    curUserId = purchasingModel.id;
-                                  });
-                                  controller_name.text = purchasingModel.details;
-                                  controller_price.text = purchasingModel.price.toString();
-                                  form();}),
+                                  onPressed: () {
+                                    setState(() {
+                                      isUpdating = true;
+                                      curUserId = purchasingModel.id;
+                                    });
+                                    controller_name.text =
+                                        purchasingModel.details;
+                                    controller_price.text =
+                                        purchasingModel.price.toString();
+                                    form();
+                                  }),
                               Expanded(
                                 child: Text(
-                                  "سعر المشترى\n" + purchasingModel.price.toString(),
-                                  style: TextStyle(fontSize: 18,color: Colors.white),
+                                  "سعر المشترى\n" +
+                                      purchasingModel.price.toString(),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                   textAlign: TextAlign.center,
                                   textDirection: TextDirection.rtl,
                                 ),
@@ -331,13 +340,17 @@ class _PurchasingState extends State<Purchasing> {
                                       isUpdating = true;
                                       curUserId = purchasingModel.id;
                                     });
-                                    controller_name.text = purchasingModel.details;
-                                    controller_price.text = purchasingModel.price.toString();
+                                    controller_name.text =
+                                        purchasingModel.details;
+                                    controller_price.text =
+                                        purchasingModel.price.toString();
                                     delete();
                                   }),
                             ],
                           ),
-                          SizedBox(height: 5,),
+                          SizedBox(
+                            height: 5,
+                          ),
                           SizedBox(
                             width: 200,
                             height: 3,
@@ -348,21 +361,18 @@ class _PurchasingState extends State<Purchasing> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 8,),
+                          SizedBox(
+                            height: 8,
+                          ),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             textDirection: TextDirection.rtl,
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-
                               Expanded(
-                                child: Text(
-                                  "الوصف\n" +
-                                      purchasingModel.details,
-                                  style: TextStyle(fontSize: 18,color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                  textDirection: TextDirection.rtl,
+                                child: DescriptionTextWidget(
+                                  text: "الوصف\n" + purchasingModel.details,
                                 ),
                               ),
                             ],
@@ -372,14 +382,20 @@ class _PurchasingState extends State<Purchasing> {
                     ),
                   );
                 });
-          }
-
-          else if (null == snapshot.data || snapshot.data.length == 0||price==null) {
+          } else if (null == snapshot.data ||
+              snapshot.data.length == 0 ||
+              price == null) {
             return Expanded(
-              child: Center(child: Text("اضغط على زر الاضافة لإضافة عمليات شراء جديدة",style: TextStyle(
-                color: Colors.amber.shade900,
-                fontSize: 30,
-              ),textDirection: TextDirection.rtl,textAlign: TextAlign.center,)),
+              child: Center(
+                  child: Text(
+                "اضغط على زر الاضافة لإضافة عمليات شراء جديدة",
+                style: TextStyle(
+                  color: Colors.amber.shade900,
+                  fontSize: 30,
+                ),
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+              )),
             );
           }
 
@@ -417,6 +433,71 @@ class _PurchasingState extends State<Purchasing> {
           children: <Widget>[list()],
         ),
       ),
+    );
+  }
+}
+
+class DescriptionTextWidget extends StatefulWidget {
+  final String text;
+
+  DescriptionTextWidget({@required this.text});
+
+  @override
+  _DescriptionTextWidgetState createState() =>
+      new _DescriptionTextWidgetState();
+}
+
+class _DescriptionTextWidgetState extends State<DescriptionTextWidget> {
+  String firstHalf;
+  String secondHalf;
+
+  bool flag = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.text.length > 50) {
+      firstHalf = widget.text.substring(0, 50);
+      secondHalf = widget.text.substring(50, widget.text.length);
+    } else {
+      firstHalf = widget.text;
+      secondHalf = "";
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      padding: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      child: secondHalf.isEmpty
+          ? new Text(firstHalf)
+          : new Column(
+              children: <Widget>[
+                new Text(
+                  flag ? (firstHalf + "...") : (firstHalf + secondHalf),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  textDirection: TextDirection.rtl,
+                ),
+                new InkWell(
+                  child: new Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      new Text(
+                        flag ? "عرض المزيد" : "تصغير",
+                        style: new TextStyle(color: Colors.amber.shade900),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    setState(() {
+                      flag = !flag;
+                    });
+                  },
+                ),
+              ],
+            ),
     );
   }
 }

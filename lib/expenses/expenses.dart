@@ -236,12 +236,12 @@ class _ExpensesState extends State<Expenses> {
                       ),
                       color: Colors.red,
                       onPressed: () {
-                        ExpensesModel purchasingModel = ExpensesModel(
+                        ExpensesModel expensesModel = ExpensesModel(
                           curUserId,
                           price,
                           details,
                         );
-                        dbHelper.delete(purchasingModel.id);
+                        dbHelper.delete(expensesModel.id);
                         Navigator.of(context).pop();
                         clearName();
                         refreshList();
@@ -286,7 +286,7 @@ class _ExpensesState extends State<Expenses> {
             return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
-                  ExpensesModel purchasingModel =
+                  ExpensesModel expensesModel =
                   ExpensesModel.fromMap(snapshot.data[index]);
                   return ListTile(
                     title: Container(
@@ -310,14 +310,14 @@ class _ExpensesState extends State<Expenses> {
                                   color: Colors.green,
                                   onPressed: () {setState(() {
                                     isUpdating = true;
-                                    curUserId = purchasingModel.id;
+                                    curUserId = expensesModel.id;
                                   });
-                                  controller_name.text = purchasingModel.details;
-                                  controller_price.text = purchasingModel.price.toString();
+                                  controller_name.text = expensesModel.details;
+                                  controller_price.text = expensesModel.price.toString();
                                   form();}),
                               Expanded(
                                 child: Text(
-                                  "السعر\n" + purchasingModel.price.toString(),
+                                  "السعر\n" + expensesModel.price.toString(),
                                   style: TextStyle(fontSize: 18,color: Colors.white),
                                   textAlign: TextAlign.center,
                                   textDirection: TextDirection.rtl,
@@ -329,10 +329,10 @@ class _ExpensesState extends State<Expenses> {
                                   onPressed: () {
                                     setState(() {
                                       isUpdating = true;
-                                      curUserId = purchasingModel.id;
+                                      curUserId = expensesModel.id;
                                     });
-                                    controller_name.text = purchasingModel.details;
-                                    controller_price.text = purchasingModel.price.toString();
+                                    controller_name.text = expensesModel.details;
+                                    controller_price.text = expensesModel.price.toString();
                                     delete();
                                   }),
                             ],
@@ -357,12 +357,8 @@ class _ExpensesState extends State<Expenses> {
                             children: <Widget>[
 
                               Expanded(
-                                child: Text(
-                                  "التفاصيل\n" +
-                                      purchasingModel.details,
-                                  style: TextStyle(fontSize: 18,color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                  textDirection: TextDirection.rtl,
+                                child:  DescriptionTextWidget(
+                                  text: "الوصف\n" + expensesModel.details,
                                 ),
                               ),
                             ],
@@ -414,6 +410,71 @@ class _ExpensesState extends State<Expenses> {
           verticalDirection: VerticalDirection.down,
           children: <Widget>[list()],
         ),
+      ),
+    );
+  }
+}
+
+class DescriptionTextWidget extends StatefulWidget {
+  final String text;
+
+  DescriptionTextWidget({@required this.text});
+
+  @override
+  _DescriptionTextWidgetState createState() =>
+      new _DescriptionTextWidgetState();
+}
+
+class _DescriptionTextWidgetState extends State<DescriptionTextWidget> {
+  String firstHalf;
+  String secondHalf;
+
+  bool flag = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.text.length > 50) {
+      firstHalf = widget.text.substring(0, 50);
+      secondHalf = widget.text.substring(50, widget.text.length);
+    } else {
+      firstHalf = widget.text;
+      secondHalf = "";
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      padding: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      child: secondHalf.isEmpty
+          ? new Text(firstHalf)
+          : new Column(
+        children: <Widget>[
+          new Text(
+            flag ? (firstHalf + "...") : (firstHalf + secondHalf),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, color: Colors.white),
+            textDirection: TextDirection.rtl,
+          ),
+          new InkWell(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                new Text(
+                  flag ? "عرض المزيد" : "تصغير",
+                  style: new TextStyle(color: Colors.pink.shade900),
+                ),
+              ],
+            ),
+            onTap: () {
+              setState(() {
+                flag = !flag;
+              });
+            },
+          ),
+        ],
       ),
     );
   }
