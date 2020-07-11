@@ -4,7 +4,7 @@ workflows:
         environment:
             flutter: stable
         scripts:
-            - echo "sdk.dir=$HOME/programs/android-sdk-macosx" > "$FCI_BUILD_DIR/your_android_app/local.properties"
+            - echo "sdk.dir=$HOME/programs/android-sdk-macosx" > "$FCI_BUILD_DIR/accounting/local.properties"
             - cd <your_flutter_module> && flutter pub get
             - cd <your_host_android_app> && ./gradlew assembleDebug
         artifacts:
