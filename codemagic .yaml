@@ -1,0 +1,20 @@
+workflows:
+    ios-flutter:
+        name: iOS App with Flutter Module
+        environment:
+            xcode: edge
+            cocoapods: default
+            flutter: stable
+        scripts:
+            - |
+                # build Flutter module
+                cd <your_flutter_module>
+                flutter packages get
+                flutter build ios-framework --output=$FCI_BUILD_DIR/<your_host_ios_app>/Flutter
+            - |
+                # build iOS project
+                cd <your_host_ios_app>
+                pod install
+                xcodebuild build -project "<your_xcode_project>.xcodeproj" -scheme "<your_scheme>" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+        artifacts:
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
