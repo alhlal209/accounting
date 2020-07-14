@@ -1,3 +1,4 @@
+import 'package:accounting/worker_debt/take_model.dart';
 import 'package:accounting/worker_debt/workers_dopt_details.dart';
 
 import 'DBHelperWorker.dart';
@@ -387,13 +388,32 @@ class _WorkersDeptState extends State<WorkersDept> {
                                 ),
                                  ),
                                 Expanded(
-                                  child: Text(
+                                  child: 
+                                   FutureBuilder<List<TakeModel>>(
+                       future: dbHelper.getWorkerDetails(workerDoptModel.id),
+                       builder: (context, snapshot) {
+                         if(snapshot.hasData){
+                           int sumit = 0;
+                           for (var i = 0; i < snapshot.data.length; i++) {
+                             sumit = sumit + snapshot.data[i].quantity;
+                           }
+                          return Text(
                                     //TODO
-                                     "المسحوب\n" +workerDoptModel.takefrom.toString(),
+                                     "المسحوب\n" +sumit.toString(),
                                     style: TextStyle(fontSize: 18,color: Colors.white),
                                     textAlign: TextAlign.center,
                                     textDirection: TextDirection.rtl,
-                                  ),
+                                  );
+
+                         }else{
+                           return CircularProgressIndicator();
+
+                         }
+                         
+                       }
+                     ),
+                                  
+                                  
                                 ),
                               ],
                             ),

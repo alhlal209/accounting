@@ -24,6 +24,25 @@ class DBHelper {
 
   static const String DB_NAME = 'workersDoptModel1.db';
 
+// CREATE TABLE `WorkersDoptModel` (
+// 	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+// 	`name`	TEXT,
+// 	`salary`	INTEGER,
+// 	`takefrom`	INTEGER,
+// 	`remain`	INTEGER
+// );
+
+// CREATE TABLE TAKEFROMSALARY (
+//             idtake INTEGER PRIMARY KEY,
+//              quantity integer,
+//             date text,
+//             foreignkey integer,
+//             FOREIGN KEY (foreignkey) REFERENCES WorkersDoptModel(id)
+//             )
+
+// select * from TAKEFROMSALARY where foreignkey = user_id
+
+
   Future<Database> get db async {
     if (_db != null) {
       return _db;
@@ -41,25 +60,31 @@ class DBHelper {
 
   _onCreate(Database db, int version) async {
     await db.execute('''
-        CREATE TABLE $TABLE (
-            $ID INTEGER PRIMARY KEY,
-             $NAME text,
-             $SALARY integer,
-             $TAKEFROM integer,
-              $REMAIN integer
-             )
+CREATE TABLE `WorkersDoptModel` (
+	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`name`	TEXT,
+	`salary`	INTEGER,
+	`takefrom`	INTEGER,
+	`remain`	INTEGER
+);
+
              ''');
     await db.execute('''
-        CREATE TABLE $TABLE1 (
-            $ID1 INTEGER PRIMARY KEY,
-             $QUANTITY integer,
-            $DATE text,
-            $FOREIGNKEY integer,
-            FOREIGN KEY ($FOREIGNKEY) REFERENCES $TABLE($ID)
+        CREATE TABLE TAKEFROMSALARY (
+            idtake INTEGER PRIMARY KEY,
+             quantity integer,
+            date text,
+            foreignkey integer,
+            FOREIGN KEY (foreignkey) REFERENCES WorkersDoptModel(id)
             )
-            ''');
+            '''
+    );
+//    await db.execute('''
+//        ALTER TABLE $TABLE1 add constrain FOREIGN KEY ($FOREIGNKEY) REFERENCES $TABLE($ID)
+//            '''
+//    );
   }
-
+//  FOREIGN KEY ($FOREIGNKEY) REFERENCES $TABLE($ID)
   Future<WorkersDoptModel> save(WorkersDoptModel workersDoptModel) async {
     var dbClient = await db;
     workersDoptModel.id =
@@ -75,8 +100,8 @@ class DBHelper {
 
   Future<List<WorkersDoptModel>> getWorkersDoptModels() async {
     var dbClient = await db;
-    List<Map> maps = await dbClient
-        .query(TABLE, columns: [ID, NAME, SALARY, TAKEFROM, REMAIN]);
+    List<Map> maps =
+        await dbClient.query(TABLE, columns: [ID, NAME, SALARY, TAKEFROM,REMAIN]);
     //List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE");
     List<WorkersDoptModel> workersDoptModels = [];
     if (maps.length > 0) {
@@ -87,10 +112,10 @@ class DBHelper {
     return workersDoptModels;
   }
 
-  Future<List<TakeModel>> getWorkerDetails() async {
+  Future<List<TakeModel>> getWorkerDetails(var workerid) async {
     var dbClient = await db;
     List<Map> maps = await dbClient
-        .query(TABLE1, columns: [ID1, QUANTITY, DATE, FOREIGNKEY]);
+        .query(TABLE1, columns: [ID1,QUANTITY, DATE, FOREIGNKEY ],where: '$FOREIGNKEY = ?', whereArgs: [workerid]);
     List<TakeModel> takeModels = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
@@ -125,23 +150,22 @@ class DBHelper {
     return await dbClient.update(TABLE, workersDoptModel.toMap(),
         where: '$ID = ?', whereArgs: [workersDoptModel.id]);
   }
-
   Future<int> sumTake() async {
     var dbClient = await db;
     List<Map> result =
-        await dbClient.rawQuery("SELECT SUM($QUANTITY) as total FROM $TABLE1 ");
+    await dbClient.rawQuery("SELECT SUM($QUANTITY) as total FROM $TABLE1");
     return result[0]['total'];
   }
-//  Where $FOREIGNKEY=$ID
-//  Future<int> foreignColumn() async {
-//    var dbClient = await db;
-//    List<Map> result = await dbClient.rawQuery("SELECT $TABLE1.column as x"
-//        " $TABLE.column from $TABLE"
-//        " join table2 when "
-//        "($TABLE.foreign_column==$TABLE.$FOREIGNKEY)");
-//    return result[0]['x'];
-//  }
 
+  Future<int> foreignColumn() async {
+    var dbClient = await db;
+    List<Map> result =
+    await dbClient.rawQuery("SELECT $TABLE.column as x"
+        " $TABLE.column from $TABLE"
+        " join table2 when "
+        "($TABLE.foreign_column==$TABLE.$FOREIGNKEY)");
+    return result[0]['x'];
+  }
   Future<int> updateDetails(TakeModel takeModel) async {
     var dbClient = await db;
     return await dbClient.update(TABLE1, takeModel.toMap(),

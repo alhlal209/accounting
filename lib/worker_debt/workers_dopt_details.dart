@@ -31,7 +31,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
 
   final formKey = new GlobalKey<FormState>();
 
-  Future<List<TakeModel>> takeModel;
+  List<TakeModel> takeModel;
 
   DBHelper dbHelper;
   bool isUpdating;
@@ -46,10 +46,9 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
     getCurrentDate();
   }
 
-  refreshList() {
-    setState(() {
-      takeModel = dbHelper.getWorkerDetails();
-    });
+  refreshList() async{
+          takeModel = await dbHelper.getWorkerDetails(widget.workersDoptModel.id);
+    setState(() {});
   }
 
   getCurrentDate() {
@@ -67,7 +66,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
   sum() {
     dbHelper.sumTake().then((value) {
       setState(() {
-       sumTake = value;
+        sumTake = null ? sumTake = 0 : sumTake = value;
       });
     });
   }
@@ -92,7 +91,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
             TakeModel(null, quantity, date, foreignkey);
         dbHelper.saveDetails(takeModel);
       }
-      sum();
+
       clearName();
       refreshList();
       Navigator.of(context).pop();
@@ -135,12 +134,11 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                   onSaved: (val) {
                     quantity = int.parse(val);
                     date=currentdate;
-//                    foreignkey = widget.workersDoptModel.id;
-//                    remain = widget.workersDoptModel.salary;
-                   widget.workersDoptModel.remain=widget.workersDoptModel.salary-sumTake;
-//                    widget.workersDoptModel.takefrom=sumTake;
+                    foreignkey = widget.workersDoptModel.id;
+                    remain = widget.workersDoptModel.salary;
                   },
                 ),
+//                - sumTake
                 SizedBox(
                   height: 8,
                 ),
@@ -244,7 +242,6 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                         dbHelper.deleteDetail(takeModel.idtake);
                         Navigator.of(context).pop();
                         clearName();
-                        sum();
                         refreshList();
                       },
                       child: Text(
@@ -315,7 +312,7 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                       height: 10,
                     ),
                     Text("المتبقي :"+
-                        (widget.workersDoptModel.salary-(sumTake!=null?sumTake:sumTake=0)).toString(),
+                        widget.workersDoptModel.remain.toString(),
                       style: TextStyle(
                         fontSize: 25,
                         color: Colors.black87,
@@ -324,14 +321,29 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                     ),
                     SizedBox(
                       height: 10,
-                    ),  Text("المسحوب :"+
-                        sumTake.toString(),
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: Colors.black87,
-                      ),
-                      textDirection: TextDirection.rtl,
-                    ),
+                    ), 
+                     FutureBuilder<List<TakeModel>>(
+                       future: dbHelper.getWorkerDetails(widget.workersDoptModel.id),
+                       builder: (context, snapshot) {
+                         if(snapshot.hasData){
+                           int sumit = 0;
+                           for (var i = 0; i < snapshot.data.length; i++) {
+                             sumit = sumit + snapshot.data[i].quantity;
+                           }
+return Text("المسحوب :"+sumit.toString(),
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: Colors.black87,
+                          ),
+                          textDirection: TextDirection.rtl,
+                    );
+                         }else{
+                           return CircularProgressIndicator();
+
+                         }
+                         
+                       }
+                     ),
                     SizedBox(
                       height: 10,
                     ),
@@ -349,15 +361,14 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
               height: 20,
             ),
             Expanded(
-              child: sumTake!=null?FutureBuilder(
-                future: dbHelper.allDetails(),
+              child: FutureBuilder(
+                future: dbHelper.getWorkerDetails(widget.workersDoptModel.id),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (BuildContext context, int index) {
-                          TakeModel takeModel =
-                              TakeModel.fromMap(snapshot.data[index]);
+                          TakeModel takeModel = snapshot.data[index];
                           return ListTile(
                             title: Container(
                               decoration: BoxDecoration(
@@ -383,10 +394,6 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                                           quantity = takeModel.quantity;
                                           idtake=takeModel.idtake;
                                           date=takeModel.date;
-                                          print(foreignkey.toString());
-                                          print(quantity.toString());
-                                          print(idtake.toString());
-                                          print(date.toString());
                                         });
                                         controller_mony_takeen.text =
                                             takeModel.quantity.toString();
@@ -429,14 +436,8 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                           );
                         });
                   } else if (null == snapshot.data || snapshot.data.length == 0) {
-                    return CircularProgressIndicator();
-                  }
-
-                  return CircularProgressIndicator();
-                },
-              ):Expanded(
-                child: Center(
-                    child: Text(
+                    return Center(
+                        child: Text(
                       "اضغط على زر الاضافة لاضافة عمال جدد",
                       style: TextStyle(
                         color: Colors.purple.shade900,
@@ -444,7 +445,11 @@ class _WorkersDoptDetailsState extends State<WorkersDoptDetails> {
                       ),
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
-                    )),
+                    ));
+                  }
+
+                  return CircularProgressIndicator();
+                },
               ),
             ),
           ],
